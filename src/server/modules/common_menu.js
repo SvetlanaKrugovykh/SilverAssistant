@@ -2,7 +2,7 @@ const { menuStarter } = require('../controllers/clientsAdmin')
 require('dotenv').config()
 const { buttonsConfig, texts } = require('./keyboard')
 const { users } = require('../users/users.model')
-const { globalBuffer, selectedByUser } = require('../globalBuffer')
+const { callTranslate } = require('../services/translation')
 
 module.exports.commonStartMenu = async function (bot, msg, home = false) {
   console.log(`/start at ${new Date()} tg_user_id: ${msg.chat.id}`)
@@ -23,7 +23,6 @@ module.exports.settingsMenu = async function (bot, msg, lang = "en") {
   })
 }
 
-
 module.exports.chooseTranslateDirectionMenu = async function (bot, msg, lang = "en") {
   await bot.sendMessage(msg.chat.id, buttonsConfig["chooseTranslateDirection"].title[lang], {
     reply_markup: {
@@ -32,7 +31,6 @@ module.exports.chooseTranslateDirectionMenu = async function (bot, msg, lang = "
     }
   })
 }
-
 
 module.exports.notTextScene = async function (bot, msg, lang = "en") {
   const GROUP_ID = process.env.GROUP_ID
@@ -95,4 +93,11 @@ module.exports.notTextScene = async function (bot, msg, lang = "en") {
 
 async function blockMenu(bot, msg, lang = "en") {
   await bot.sendMessage(msg.chat.id, texts[lang]['0block'], {})
+}
+
+module.exports.translation = async function (bot, msg, data) {
+  const chatId = msg?.chat?.id
+  if (!chatId || !msg?.text) return
+
+  await callTranslate(bot, msg, data)
 }

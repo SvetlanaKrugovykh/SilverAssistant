@@ -7,14 +7,16 @@ const buttonsConfig = {
     options: [{ resize_keyboard: true }],
     buttons: {
       en: [
-        [{ text: '🟣   Input phrase for translate ', callback_data: '0_1' }],
+        [{ text: '🟣   Input phrase for translate', callback_data: '0_1' }],
+        [{ text: '🔵   Get translation', callback_data: '0_5' }],
         [{ text: '🖊️🎤 Ask something', callback_data: '0_2' }],
         [{ text: '⚙️   Settings', callback_data: '0_3' }],
         [{ text: '🏠', callback_data: '0_4' }]
       ],
       ru: [
-        [{ text: '🟣   Введите текст для перевода ', callback_data: '0_1' }],
-        [{ text: '🖊️🎤 Задайте вопрос ', callback_data: '0_2' }],
+        [{ text: '🟣   Введите текст для перевода', callback_data: '0_1' }],
+        [{ text: '🔵   Получить перевод', callback_data: '0_5' }],
+        [{ text: '🖊️🎤 Задайте вопрос', callback_data: '0_2' }],
         [{ text: '⚙️   Установки', callback_data: '0_3' }],
         [{ text: '🏠', callback_data: '0_4' }]
       ]

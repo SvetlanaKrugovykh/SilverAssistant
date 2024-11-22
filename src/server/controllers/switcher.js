@@ -32,8 +32,8 @@ async function handler(bot, msg) {
   if (!chatId || !msg?.text) return
 
   const data = getCallbackData(msg.text)
+  if (!data) return
 
-  let selected_ = null
   if (!selectedByUser[chatId]) selectedByUser[chatId] = {}
   if (!globalBuffer[chatId]) globalBuffer[chatId] = {}
   let lang = selectedByUser[chatId]?.language || 'en'
@@ -47,14 +47,17 @@ async function handler(bot, msg) {
   console.log('The choice is:', data)
   switch (data) {
     case '0_1':
-      selected_ = await textInput(bot, msg, data, selectedByUser[chatId])
-      if (selected_) selectedByUser[chatId] = selected_
+      await textInput(bot, msg, data, selectedByUser[chatId])
+      await menu.commonStartMenu(bot, msg, true)
       break
     case '0_2':
       await menu.notTextScene(bot, msg, false)
       break
     case '0_3':
       await menu.settingsMenu(bot, msg, lang)
+      break
+    case '0_5':
+      await menu.translation(bot, msg, data)
       break
     case '1_1':
       await menu.chooseTranslateDirectionMenu(bot, msg)
