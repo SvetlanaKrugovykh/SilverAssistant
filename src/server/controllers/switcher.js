@@ -5,8 +5,8 @@ const { globalBuffer, selectedByUser } = require('../globalBuffer')
 const fs = require('fs')
 const path = require('path')
 const validDataValues = [
-  'ru_en', 'ru_de', 'ru_es', 'ru_pl', 'ru_fr', 'ru_it',
-  'en_ru', 'de_ru', 'es_ru', 'pl_ru', 'fr_ru', 'it_ru'
+  'ru_en', 'ru_de', 'ru_es', 'ru_fr',
+  'en_ru', 'de_ru', 'es_ru', 'pl_ru', 'fr_ru'
 ]
 
 function getCallbackData(text) {

@@ -12,6 +12,8 @@ module.exports.callTranslate = async function (bot, msg, data) {
     }
 
     const THROUGH_TOKEN = process.env.THROUGH_TOKEN
+    const EMAIL = process.env.EMAIL
+
     let translatedText = text
     const directions = direction.includes('en') ? [direction] : [
       `${direction.split('_')[0]}_en`,
@@ -22,7 +24,7 @@ module.exports.callTranslate = async function (bot, msg, data) {
       const response = await axios.post(process.env.THROUGH_URL, {
         serviceId: "Translate-txt-to-txt",
         clientId: "Speech-to-TXT-Server",
-        email: "support@silver-service.com.ua",
+        email: EMAIL,
         direction: dir,
         text: translatedText,
         token: THROUGH_TOKEN
