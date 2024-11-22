@@ -32,6 +32,15 @@ module.exports.chooseTranslateDirectionMenu = async function (bot, msg, lang = "
   })
 }
 
+module.exports.chooseNativeLanguageMenu = async function (bot, msg, lang = "en") {
+  await bot.sendMessage(msg.chat.id, buttonsConfig["chooseNativeLanguage"].title[lang], {
+    reply_markup: {
+      keyboard: buttonsConfig["chooseNativeLanguage"].buttons[lang],
+      resize_keyboard: true
+    }
+  })
+}
+
 module.exports.notTextScene = async function (bot, msg, lang = "en") {
   const GROUP_ID = process.env.GROUP_ID
   try {

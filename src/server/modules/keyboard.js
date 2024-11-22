@@ -31,18 +31,41 @@ const buttonsConfig = {
     buttons: {
       en: [
         [{ text: '🥢 Translate direction', callback_data: '1_1' }],
+        [{ text: '🇵🇱 🇬🇧 🇩🇪 🇷🇺 Select a native language', callback_data: '1_2' }],
         [{ text: '🏠', callback_data: '0_4' }]
       ],
       ru: [
         [{ text: '🥢  Направление перевода ', callback_data: '1_1' }],
+        [{ text: '🇵🇱 🇬🇧 🇩🇪 🇺🇦 Выбрать базовый язык', callback_data: '1_2' }],
         [{ text: '🏠', callback_data: '0_4' }]
       ]
     }
   },
+  chooseNativeLanguage: {
+    title: {
+      en: 'Please select a language',
+      ru: 'Выберите язык',
+    },
+    options: [{ resize_keyboard: true }],
+    buttons: {
+      en: [
+        [{ text: '🇬🇧 English', callback_data: '0_7' }],
+        [{ text: '🇷🇺 Russian', callback_data: '0_9' }],
+        [{ text: '↩️', callback_data: '0_3' }],
+        [{ text: '🏠', callback_data: '0_4' }]
+      ],
+      ru: [
+        [{ text: '🇬🇧 English', callback_data: '0_7' }],
+        [{ text: '🇷🇺 Русский', callback_data: '0_9' }],
+        [{ text: '↩️', callback_data: '0_3' }],
+        [{ text: '🏠', callback_data: '0_4' }]
+      ],
+    }
+  },
   chooseTranslateDirection: {
     title: {
-      en: 'Выберете направление перевода',
-      ru: 'Choose translate direction'
+      ru: 'Выберете направление перевода',
+      en: 'Choose translate direction'
     },
     options: [{ resize_keyboard: true }],
     buttons: {
@@ -81,7 +104,6 @@ const buttonsConfig = {
     }
   }
 }
-
 
 const texts = {
   en: {
@@ -125,4 +147,5 @@ const texts = {
     '0_15': 'Ваше замовлення прийнято. Очікуйте готовності замовлення для видачі. Загальна сума:',
   }
 }
+
 module.exports = { buttonsConfig, texts }

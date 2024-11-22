@@ -1,10 +1,9 @@
 const { buttonsConfig } = require('../modules/keyboard')
-const { users } = require('../users/users.model')
 const menu = require('../modules/common_menu')
 const { textInput } = require('../modules/common_functions')
-const { isThisGroupId } = require('../modules/bot')
 const { globalBuffer, selectedByUser } = require('../globalBuffer')
-const { commonStartMenu } = require('../modules/common_menu')
+const fs = require('fs')
+const path = require('path')
 const validDataValues = [
   'ru_en', 'ru_de', 'ru_es', 'ru_pl', 'ru_fr', 'ru_it',
   'en_ru', 'de_ru', 'es_ru', 'pl_ru', 'fr_ru', 'it_ru'
@@ -34,14 +33,14 @@ async function handler(bot, msg) {
   const data = getCallbackData(msg.text)
   if (!data) return
 
-  if (!selectedByUser[chatId]) selectedByUser[chatId] = {}
+  if (!selectedByUser[chatId]) selectedByUser[chatId] = getFromUserFile(chatId)
+
   if (!globalBuffer[chatId]) globalBuffer[chatId] = {}
   let lang = selectedByUser[chatId]?.language || 'en'
 
   if (validDataValues.includes(data)) {
     const dataExt = data
     pinTranslateDirection(dataExt, msg)
-    return
   }
 
   console.log('The choice is:', data)
@@ -59,8 +58,15 @@ async function handler(bot, msg) {
     case '0_5':
       await menu.translation(bot, msg, data)
       break
+    case '0_7':
+    case '0_9':
+      pinNativeLanguage(data, msg)
+      break
     case '1_1':
       await menu.chooseTranslateDirectionMenu(bot, msg)
+      break
+    case '1_2':
+      await menu.chooseNativeLanguageMenu(bot, msg)
       break
     default:
       await menu.commonStartMenu(bot, msg, true)
@@ -78,6 +84,48 @@ function pinTranslateDirection(dataExt, msg) {
     selectedByUser[chatId].language = lang
     selectedByUser[chatId].direction = direction
     console.log(selectedByUser[chatId])
+    pinToUserFile(chatId)
+  }
+}
+
+function pinNativeLanguage(menuItem, msg) {
+  try {
+    const chatId = msg?.chat?.id
+    let lang = 'en'
+    if (menuItem === '0_9') lang = 'ru'
+
+    if (chatId && lang) {
+      if (!selectedByUser[chatId]) selectedByUser[chatId] = {}
+      selectedByUser[chatId].nativeLanguage = lang
+      console.log(selectedByUser[chatId])
+      pinToUserFile(chatId)
+    }
+  } catch (err) {
+    console.log(err)
+    return
+  }
+}
+
+function pinToUserFile(chatId) {
+  try {
+    if (!selectedByUser[chatId]) return
+    const dirPath = path.join(__dirname, '../../../users/settings')
+    const filePath = path.join(dirPath, `${chatId}.json`)
+
+    fs.mkdirSync(dirPath, { recursive: true })
+    fs.writeFileSync(filePath, JSON.stringify(selectedByUser[chatId], null, 2))
+  } catch (error) {
+    console.log('Error pinning to user file:', error)
+  }
+}
+
+function getFromUserFile(chatId) {
+  try {
+    const filePath = path.join(__dirname, '../../../users/settings', `${chatId}.json`)
+    return JSON.parse(fs.readFileSync(filePath))
+  } catch (error) {
+    console.log(`./users/settings/${chatId} not found`)
+    return {}
   }
 }
 
