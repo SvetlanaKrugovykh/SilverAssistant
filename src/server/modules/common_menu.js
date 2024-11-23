@@ -95,7 +95,11 @@ module.exports.notTextScene = async function (bot, msg, lang = "en") {
           fs.mkdirSync(dirPath, { recursive: true })
           const filePath = path.join(dirPath, `${message.fileId}.ogg`)
           await downloadFile(bot, message.fileId, filePath)
-          await callSpeechToTxt(bot, msg, { file: { buffer: fs.readFileSync(filePath), originalname: `${message.fileId}.ogg` } })
+          const response = await callSpeechToTxt({ file: { path: filePath, originalname: `${message.fileId}.ogg` } })
+          const translatedText = response.data?.replyData?.translated_text?.[0]
+          if (typeof translatedText === 'string' && translatedText.trim().length > 0) {
+            await bot.sendMessage(msg.chat.id, translatedText)
+          }
           await bot.sendVoice(GROUP_ID, message.fileId)
           console.log(`Voice file saved to ${filePath}`)
         }
