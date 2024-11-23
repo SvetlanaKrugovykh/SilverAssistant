@@ -96,7 +96,7 @@ module.exports.notTextScene = async function (bot, msg, lang = "en") {
           const filePath = path.join(dirPath, `${message.fileId}.ogg`)
           await downloadFile(bot, message.fileId, filePath)
           const response = await callSpeechToTxt({ file: { path: filePath, originalname: `${message.fileId}.ogg` } })
-          const translatedText = response.data?.replyData?.translated_text?.[0]
+          const translatedText = response.replyData?.translated_text?.[0]
           if (typeof translatedText === 'string' && translatedText.trim().length > 0) {
             await bot.sendMessage(msg.chat.id, translatedText)
           }
