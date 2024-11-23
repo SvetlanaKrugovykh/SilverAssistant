@@ -50,7 +50,7 @@ async function handler(bot, msg) {
       await menu.commonStartMenu(bot, msg, true)
       break
     case '0_2':
-      await menu.notTextScene(bot, msg, false)
+      await menu.notTextScene(bot, msg)
       break
     case '0_3':
       await menu.settingsMenu(bot, msg, lang)

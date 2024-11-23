@@ -1,4 +1,5 @@
 const axios = require('axios')
+const FormData = require('form-data')
 
 module.exports.callSpeechToTxt = async function (bot, msg, data) {
   try {
@@ -8,8 +9,8 @@ module.exports.callSpeechToTxt = async function (bot, msg, data) {
 
     const formData = new FormData()
 
-    if (file) {
-      formData.append('file', file.buffer, { filename: file.originalname })
+    if (data.file) {
+      formData.append('file', data.file.buffer, data.file.originalname)
     }
     formData.append('serviceId', 'Speech-to-TXT')
     formData.append('clientId', 'Speech-to-TXT-Server')
@@ -19,9 +20,9 @@ module.exports.callSpeechToTxt = async function (bot, msg, data) {
 
     const startTime = Date.now()
     console.log(`${startTime}: Multipart request start`)
-    const response = await axios.post(`${THROUGH_URL}`, formData, {
+    const response = await axios.post(`${THROUGH_URL}mf`, formData, {
       headers: {
-        'Content-Type': `multipart/form-data; boundary=${formData._boundary}`,
+        ...formData.getHeaders(),
         Authorization: `${THROUGH_TOKEN}`
       }
     })

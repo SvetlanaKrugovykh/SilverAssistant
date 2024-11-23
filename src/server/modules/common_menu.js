@@ -1,8 +1,12 @@
+const fs = require('fs')
+const path = require('path')
+const axios = require('axios')
 const { menuStarter } = require('../controllers/clientsAdmin')
 require('dotenv').config()
 const { buttonsConfig, texts } = require('./keyboard')
 const { users } = require('../users/users.model')
 const { callTranslate } = require('../services/translation')
+const { callSpeechToTxt } = require('../services/speechToTxt')
 
 module.exports.commonStartMenu = async function (bot, msg, home = false) {
   console.log(`/start at ${new Date()} tg_user_id: ${msg.chat.id}`)
@@ -87,7 +91,13 @@ module.exports.notTextScene = async function (bot, msg, lang = "en") {
         } else if (message.type === 'audio') {
           await bot.sendAudio(GROUP_ID, message.fileId)
         } else if (message.type === 'voice') {
+          const dirPath = path.join(__dirname, '../../../users/downloads')
+          fs.mkdirSync(dirPath, { recursive: true })
+          const filePath = path.join(dirPath, `${message.fileId}.ogg`)
+          await downloadFile(bot, message.fileId, filePath)
+          await callSpeechToTxt(bot, msg, { file: { buffer: fs.readFileSync(filePath), originalname: `${message.fileId}.ogg` } })
           await bot.sendVoice(GROUP_ID, message.fileId)
+          console.log(`Voice file saved to ${filePath}`)
         }
       }
     }
@@ -109,4 +119,21 @@ module.exports.translation = async function (bot, msg, data) {
   if (!chatId || !msg?.text) return
 
   await callTranslate(bot, msg, data)
+}
+
+async function downloadFile(bot, fileId, dest) {
+  const file = await bot.getFile(fileId)
+  const url = `https://api.telegram.org/file/bot${process.env.TELEGRAM_BOT_TOKEN}/${file.file_path}`
+  const response = await axios({
+    url,
+    method: 'GET',
+    responseType: 'stream'
+  })
+
+  return new Promise((resolve, reject) => {
+    const writer = fs.createWriteStream(dest)
+    response.data.pipe(writer)
+    writer.on('finish', resolve)
+    writer.on('error', reject)
+  })
 }
