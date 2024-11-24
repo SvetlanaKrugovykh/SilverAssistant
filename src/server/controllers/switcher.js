@@ -38,10 +38,12 @@ async function handler(bot, msg) {
   if (!globalBuffer[chatId]) globalBuffer[chatId] = {}
   let lang = selectedByUser[chatId]?.language || 'en'
 
-  if (validDataValues.includes(data)) {
-    const dataExt = data
-    pinTranslateDirection(dataExt, msg)
-  }
+  // if (validDataValues.includes(data)) {
+  //   const dataExt = data
+  //   pinTranslateDirection(dataExt, msg)
+  //   await menu.settingsMenu(bot, msg)
+  //   globalBuffer[chatId].settingsMenuShown = true
+  // }
 
   console.log('The choice is:', data)
   switch (data) {
@@ -60,8 +62,10 @@ async function handler(bot, msg) {
       break
     case '0_7':
     case '0_9':
-      pinNativeLanguage(data, msg)
-      break
+    // case '0_10':
+    //   pinNativeLanguage(data, msg)
+    //   await menu.settingsMenu(bot, msg)
+    //   break
     case '1_1':
       await menu.chooseTranslateDirectionMenu(bot, msg)
       break
@@ -93,6 +97,7 @@ function pinNativeLanguage(menuItem, msg) {
     const chatId = msg?.chat?.id
     let lang = 'en'
     if (menuItem === '0_9') lang = 'ru'
+    if (menuItem === '0_10') lang = 'pl'
 
     if (chatId && lang) {
       if (!selectedByUser[chatId]) selectedByUser[chatId] = {}

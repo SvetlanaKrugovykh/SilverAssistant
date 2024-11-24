@@ -51,12 +51,14 @@ const buttonsConfig = {
       en: [
         [{ text: '🇬🇧 English', callback_data: '0_7' }],
         [{ text: '🇷🇺 Russian', callback_data: '0_9' }],
+        [{ text: '🇵🇱 Polski', callback_data: '0_10' }],
         [{ text: '↩️', callback_data: '0_3' }],
         [{ text: '🏠', callback_data: '0_4' }]
       ],
       ru: [
         [{ text: '🇬🇧 English', callback_data: '0_7' }],
         [{ text: '🇷🇺 Русский', callback_data: '0_9' }],
+        [{ text: '🇵🇱 Polski', callback_data: '0_10' }],
         [{ text: '↩️', callback_data: '0_3' }],
         [{ text: '🏠', callback_data: '0_4' }]
       ],

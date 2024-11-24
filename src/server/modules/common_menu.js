@@ -7,6 +7,7 @@ const { buttonsConfig, texts } = require('./keyboard')
 const { users } = require('../users/users.model')
 const { callTranslate } = require('../services/translation')
 const { callSpeechToTxt } = require('../services/speechToTxt')
+const { selectedByUser } = require('../globalBuffer')
 
 module.exports.commonStartMenu = async function (bot, msg, home = false) {
   console.log(`/start at ${new Date()} tg_user_id: ${msg.chat.id}`)
@@ -96,11 +97,16 @@ module.exports.notTextScene = async function (bot, msg, lang = "en") {
           const filePath = path.join(dirPath, `${message.fileId}.ogg`)
           await downloadFile(bot, message.fileId, filePath)
           const response = await callSpeechToTxt({ file: { path: filePath, originalname: `${message.fileId}.ogg` } })
-          const translatedText = response.replyData?.translated_text?.[0]
-          if (typeof translatedText === 'string' && translatedText.trim().length > 0) {
-            await bot.sendMessage(msg.chat.id, translatedText)
+          const textFromVoice = response.replyData?.translated_text?.[0]
+          if (typeof textFromVoice === 'string' && textFromVoice.trim().length > 0) {
+            selectedByUser[msg.chat.id].text = textFromVoice
+            await bot.sendMessage(msg.chat.id, textFromVoice)
+            const translatedText = await callTranslate(bot, msg)
+            if (typeof translatedText === 'string' && translatedText.trim().length > 0) {
+              await bot.sendMessage(msg.chat.id, translatedText)
+            }
           }
-          await bot.sendVoice(GROUP_ID, message.fileId)
+          if (process.env.VOICE_TO_GROUP === 'true') await bot.sendVoice(GROUP_ID, message.fileId)
           console.log(`Voice file saved to ${filePath}`)
         }
       }

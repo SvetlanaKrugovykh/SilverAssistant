@@ -1,7 +1,7 @@
 const axios = require('axios')
 const { selectedByUser } = require('../globalBuffer')
 
-module.exports.callTranslate = async function (bot, msg, data) {
+module.exports.callTranslate = async function (bot, msg) {
   try {
     const text = selectedByUser[msg.chat.id]?.text
     const direction = `${selectedByUser[msg.chat.id]?.language}_${selectedByUser[msg.chat.id]?.direction}`
