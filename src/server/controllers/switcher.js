@@ -33,22 +33,23 @@ async function handler(bot, msg) {
   const data = getCallbackData(msg.text)
   if (!data) return
 
+  const dataExt = data
   if (!selectedByUser[chatId]) selectedByUser[chatId] = getFromUserFile(chatId)
 
   if (!globalBuffer[chatId]) globalBuffer[chatId] = {}
-  let lang = selectedByUser[chatId]?.language || 'en'
+  let lang = selectedByUser[chatId]?.nativeLanguage || 'en'
 
-  // if (validDataValues.includes(data)) {
-  //   const dataExt = data
-  //   pinTranslateDirection(dataExt, msg)
-  //   await menu.settingsMenu(bot, msg)
-  //   globalBuffer[chatId].settingsMenuShown = true
-  // }
+  if (validDataValues.includes(data)) {
+    if (selectedByUser[chatId]?.changed) return
+    pinTranslateDirection(dataExt, msg)
+    await menu.settingsMenu(bot, msg, lang)
+    return
+  }
 
   console.log('The choice is:', data)
   switch (data) {
     case '0_1':
-      await textInput(bot, msg, data, selectedByUser[chatId])
+      await textInput(bot, msg, data)
       await menu.commonStartMenu(bot, msg, true)
       break
     case '0_2':
@@ -62,14 +63,16 @@ async function handler(bot, msg) {
       break
     case '0_7':
     case '0_9':
-    // case '0_10':
-    //   pinNativeLanguage(data, msg)
-    //   await menu.settingsMenu(bot, msg)
-    //   break
+      if (selectedByUser[chatId]?.changed) return
+      pinNativeLanguage(data, msg)
+      await menu.settingsMenu(bot, msg, lang)
+      break
     case '1_1':
+      selectedByUser[chatId].changed = false
       await menu.chooseTranslateDirectionMenu(bot, msg)
       break
     case '1_2':
+      selectedByUser[chatId].changed = false
       await menu.chooseNativeLanguageMenu(bot, msg)
       break
     default:
@@ -87,6 +90,7 @@ function pinTranslateDirection(dataExt, msg) {
     if (!selectedByUser[chatId]) selectedByUser[chatId] = {}
     selectedByUser[chatId].language = lang
     selectedByUser[chatId].direction = direction
+    selectedByUser[chatId].changed = true
     console.log(selectedByUser[chatId])
     pinToUserFile(chatId)
   }
@@ -102,6 +106,8 @@ function pinNativeLanguage(menuItem, msg) {
     if (chatId && lang) {
       if (!selectedByUser[chatId]) selectedByUser[chatId] = {}
       selectedByUser[chatId].nativeLanguage = lang
+      selectedByUser[chatId].text = ''
+      selectedByUser[chatId].changed = true
       console.log(selectedByUser[chatId])
       pinToUserFile(chatId)
     }
