@@ -16,4 +16,41 @@ bot.on('message', async (msg) => {
   }
 })
 
+bot.on('text', async (msg) => {
+  if (msg.text.startsWith('platform:')) {
+    console.log('Received platform message:', msg.text)
+    await menu.commonStartMenu(bot, msg, true)
+  }
+})
+
+bot.on('callback_query', async (callbackQuery) => {
+  await bot.answerCallbackQuery(callbackQuery.id)
+  const action = callbackQuery.data
+  const msg = callbackQuery.message
+  const inlineKeyboard = msg.reply_markup.inline_keyboard
+  const text = inlineKeyboard[0][0].text
+  const senderIdMatch = text.match(/sender_id:\s(\d+)/)
+  const senderId = senderIdMatch ? senderIdMatch[1] : null
+  if (!senderId) {
+    console.log('sender_id not found:', text)
+    return
+  }
+
+  console.log('Callback query received:', action)
+
+  if (action === 'reply') {
+    await bot.sendMessage(
+      msg.chat.id,
+      `✅ Ответ подтвержден для: \nplatform: Facebook\nsender_id: 8886314851424435`
+    )
+  } else if (action === 'decline') {
+    await bot.sendMessage(
+      msg.chat.id,
+      `❌ Ответ отклонен для: \nplatform: Facebook\nsender_id: 8886314851424435`
+    )
+  } else {
+    console.log('Неизвестное действие:', action)
+  }
+})
+
 module.exports = { bot }
