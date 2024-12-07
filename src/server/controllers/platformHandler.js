@@ -11,6 +11,7 @@ module.exports.sendToPlatform = async function (platform, senderId, msg) {
     let fileUrl
     let downloadedFilePath
     let attachmentId
+    let type = 'image'
 
     if (msg.audio || msg.voice || msg.photo || msg.video || msg.document) {
       const fileId = msg.audio?.file_id || msg.voice?.file_id ||
@@ -22,20 +23,28 @@ module.exports.sendToPlatform = async function (platform, senderId, msg) {
       fileUrl = `https://api.telegram.org/file/bot${process.env.TELEGRAM_BOT_TOKEN}/${file.file_path}`
       downloadedFilePath = await downloadTelegramFile(fileUrl)
       console.log('Downloaded file path:', downloadedFilePath)
-      attachmentId = await uploadToFacebook(downloadedFilePath)
+      content = {
+        "attachment": {
+          "type": type,
+          "payload": {
+            "is_reusable": true
+          }
+        }
+      }
+      attachmentId = await uploadToFacebook(downloadedFilePath, content)
 
     }
 
     if (msg.text) {
       content = { text: msg.text }
     } else if (msg.audio || msg.voice) {
-      content = { attachment: { type: 'audio', payload: { attachment_id: attachmentId } } };
+      content = { attachment: { type: 'audio', payload: { attachment_id: attachmentId } } }
     } else if (msg.photo) {
-      content = { attachment: { type: 'image', payload: { attachment_id: attachmentId } } };
+      content = { attachment: { type: 'image', payload: { attachment_id: attachmentId } } }
     } else if (msg.video) {
-      content = { attachment: { type: 'video', payload: { attachment_id: attachmentId } } };
+      content = { attachment: { type: 'video', payload: { attachment_id: attachmentId } } }
     } else if (msg.document) {
-      content = { attachment: { type: 'file', payload: { attachment_id: attachmentId } } };
+      content = { attachment: { type: 'file', payload: { attachment_id: attachmentId } } }
     }
 
 
@@ -44,14 +53,17 @@ module.exports.sendToPlatform = async function (platform, senderId, msg) {
 
     switch (platform) {
       case 'Facebook':
+      case 'facebook':
         await sendToFacebook(senderId, content)
         await bot.sendMessage(msg.chat.id, `Message sent to Facebook\nreceiver_id: ${senderId}`)
         break
       case 'Instagram':
+      case 'instagram':
         await sendToInstagram(senderId, content)
         await bot.sendMessage(msg.chat.id, `Message sent to Instagram\nreceiver_id: ${senderId}`)
         break
       case 'WhatsApp':
+      case 'whatsapp':
         await sendToWhatsApp(senderId, content)
         await bot.sendMessage(msg.chat.id, `Message sent to WhatsApp\nreceiver_id: ${senderId}`)
         break
@@ -73,7 +85,7 @@ async function sendToFacebook(senderId, content) {
 }
 
 async function sendToInstagram(senderId, content) {
-  const url = `https://graph.facebook.com/${process.env.API_VERSION}/${senderId}/messages?access_token=${process.env.INSTAGRAM_ACCESS_TOKEN}`
+  const url = `https://graph.facebook.com/${process.env.API_VERSION}/me/messages?access_token=${process.env.INSTAGRAM_ACCESS_TOKEN}`
   const messageData = {
     recipient: { id: senderId },
     message: content
@@ -82,7 +94,7 @@ async function sendToInstagram(senderId, content) {
 }
 
 async function sendToWhatsApp(senderId, content) {
-  const url = `https://graph.facebook.com/${process.env.API_VERSION}/${senderId}/messages?access_token=${process.env.WHATSAPP_ACCESS_TOKEN}`
+  const url = `https://graph.facebook.com/${process.env.API_VERSION}/me/messages?access_token=${process.env.WHATSAPP_ACCESS_TOKEN}`
   const messageData = {
     recipient: { id: senderId },
     message: content
@@ -108,13 +120,13 @@ async function downloadTelegramFile(fileUrl) {
   }
 }
 
-async function uploadToFacebook(filePath) {
+async function uploadToFacebook(filePath, content) {
   try {
     const url = `https://graph.facebook.com/${process.env.API_VERSION}/me/message_attachments?access_token=${process.env.FACEBOOK_PAGE_ACCESS_TOKEN}`
     console.log(`Uploading file: ${filePath} to ${url}`)
 
     const formData = new FormData()
-    formData.append('message', 'Audio file upload')
+    formData.append('message', JSON.stringify(content), { contentType: 'application/json' })
     formData.append('filedata', fs.createReadStream(filePath))
 
     const response = await axios.post(url, formData, {

@@ -35,7 +35,7 @@ bot.on('callback_query', async (callbackQuery) => {
     const platforms = text.match(/platform:\s(\w+)/)[1]
     const senderIdMatch = text.match(/sender_id:\s(\d+)/)
     const senderId = senderIdMatch ? senderIdMatch[1] : null
-    const platform = platforms ? platforms : 'Facebook'
+    const platform = platforms ? platforms : 'facebook'
     if (!senderId) {
       console.log('sender_id not found:', text)
       return
