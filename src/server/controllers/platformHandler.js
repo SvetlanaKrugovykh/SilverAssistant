@@ -38,7 +38,7 @@ module.exports.sendToPlatform = async function (platform, senderId, msg) {
           }
         }
       }
-      attachmentId = await uploadToFacebook(downloadedFilePath, content)
+      attachmentId = await uploadToFacebook(downloadedFilePath, content, platform)
 
     }
 
@@ -127,9 +127,27 @@ async function downloadTelegramFile(fileUrl) {
   }
 }
 
-async function uploadToFacebook(filePath, content) {
+async function uploadToFacebook(filePath, content, platform) {
   try {
-    const url = `https://graph.facebook.com/${process.env.API_VERSION}/me/message_attachments?access_token=${process.env.FACEBOOK_PAGE_ACCESS_TOKEN}`
+    let TOKEN
+    switch (platform) {
+      case 'Facebook':
+      case 'facebook':
+        TOKEN = process.env.FACEBOOK_PAGE_ACCESS_TOKEN
+        break
+      case 'Instagram':
+      case 'instagram':
+        TOKEN = process.env.INSTAGRAM_ACCESS_TOKEN
+        break
+      case 'WhatsApp':
+      case 'whatsapp':
+        TOKEN = process.env.WHATSAPP_ACCESS_TOKEN
+        break
+      default:
+        console.log('Unknown platform:', platform)
+        return
+    }
+    const url = `https://graph.facebook.com/${process.env.API_VERSION}/me/message_attachments?access_token=${TOKEN}`
     console.log(`Uploading file: ${filePath} to ${url}`)
 
     const formData = new FormData()
