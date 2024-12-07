@@ -11,13 +11,20 @@ module.exports.sendToPlatform = async function (platform, senderId, msg) {
     let fileUrl
     let downloadedFilePath
     let attachmentId
-    let type = 'image'
+    let type = 'file'
 
     if (msg.audio || msg.voice || msg.photo || msg.video || msg.document) {
       const fileId = msg.audio?.file_id || msg.voice?.file_id ||
         msg.photo?.[msg.photo.length - 1]?.file_id ||
         msg.video?.file_id ||
         msg.document?.file_id
+      if (msg.audio || msg.voice) {
+        type = 'audio'
+      } else if (msg.photo) {
+        type = 'image'
+      } else if (msg.video) {
+        type = 'video'
+      }
 
       const file = await bot.getFile(fileId)
       fileUrl = `https://api.telegram.org/file/bot${process.env.TELEGRAM_BOT_TOKEN}/${file.file_path}`
