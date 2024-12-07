@@ -2,6 +2,7 @@ const { handler } = require('./controllers/switcher')
 const { isThisGroupId } = require('./modules/bot')
 const { bot } = require('./globalBuffer')
 const menu = require('./modules/common_menu')
+const { globalBuffer } = require('./globalBuffer')
 
 bot.on('message', async (msg) => {
 
@@ -24,33 +25,40 @@ bot.on('text', async (msg) => {
 })
 
 bot.on('callback_query', async (callbackQuery) => {
-  await bot.answerCallbackQuery(callbackQuery.id)
-  const action = callbackQuery.data
-  const msg = callbackQuery.message
-  const inlineKeyboard = msg.reply_markup.inline_keyboard
-  const text = inlineKeyboard[0][0].text
-  const senderIdMatch = text.match(/sender_id:\s(\d+)/)
-  const senderId = senderIdMatch ? senderIdMatch[1] : null
-  if (!senderId) {
-    console.log('sender_id not found:', text)
-    return
-  }
+  try {
+    const chatId = callbackQuery.message.chat.id
+    await bot.answerCallbackQuery(callbackQuery.id)
+    const action = callbackQuery.data
+    const msg = callbackQuery.message
+    const inlineKeyboard = msg.reply_markup.inline_keyboard
+    const text = inlineKeyboard[0][0].text
+    const platforms = text.match(/platform:\s(\w+)/)[1]
+    const senderIdMatch = text.match(/sender_id:\s(\d+)/)
+    const senderId = senderIdMatch ? senderIdMatch[1] : null
+    const platform = platforms ? platforms : 'Facebook'
+    if (!senderId) {
+      console.log('sender_id not found:', text)
+      return
+    }
+    console.log('Callback query received:', action)
 
-  console.log('Callback query received:', action)
-
-  if (action === 'reply') {
-    await bot.sendMessage(
-      msg.chat.id,
-      `✅ Reply message for: \nplatform: Facebook\nsender_id: 8886314851424435`
-    )
-  } else if (action === 'decline') {
-    await bot.sendMessage(
-      msg.chat.id,
-      `❌ Decline message for: \nplatform: Facebook\nsender_id: 8886314851424435`
-    )
-  } else {
-    console.log('Unknown action:', action)
-  }
+    if (action === 'reply') {
+      await bot.sendMessage(
+        msg.chat.id,
+        `✅ Input reply message for: \nplatform: Facebook\nsender_id: ${senderId}`
+      )
+      if (globalBuffer[chatId] === undefined) globalBuffer[chatId] = {}
+      globalBuffer[chatId].platform = platform
+      globalBuffer[chatId].senderId = senderId
+    } else if (action === 'decline') {
+      await bot.sendMessage(
+        msg.chat.id,
+        `❌ Decline message for: \nplatform: Facebook\nsender_id: ${senderId}`
+      )
+    } else {
+      console.log('Unknown action:', action)
+    }
+  } catch (error) { console.log(error) }
 })
 
 module.exports = { bot }

@@ -2,8 +2,10 @@ const { buttonsConfig } = require('../modules/keyboard')
 const menu = require('../modules/common_menu')
 const { textInput } = require('../modules/common_functions')
 const { globalBuffer, selectedByUser } = require('../globalBuffer')
+const { sendToPlatform } = require('./platformHandler')
 const fs = require('fs')
 const path = require('path')
+require('dotenv').config()
 const validDataValues = [
   'ru_en', 'ru_de', 'ru_es', 'ru_fr',
   'en_ru', 'de_ru', 'es_ru', 'pl_ru', 'fr_ru'
@@ -29,6 +31,18 @@ function getCallbackData(text) {
 async function handler(bot, msg) {
   const chatId = msg?.chat?.id
   if (!chatId || !msg?.text) return
+
+  if (globalBuffer[chatId] === undefined) globalBuffer[chatId] = {}
+  if (globalBuffer[chatId]?.platform && globalBuffer[chatId]?.senderId) {
+    console.log('Platform:', globalBuffer[chatId]?.platform)
+    console.log('Sender ID:', globalBuffer[chatId]?.senderId)
+
+    await sendToPlatform(globalBuffer[chatId].platform, globalBuffer[chatId].senderId, msg)
+
+    delete globalBuffer[chatId].platform
+    delete globalBuffer[chatId].senderId
+    return
+  }
 
   const data = getCallbackData(msg.text)
   if (!data) return
