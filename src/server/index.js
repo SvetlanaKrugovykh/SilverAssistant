@@ -41,15 +41,15 @@ bot.on('callback_query', async (callbackQuery) => {
   if (action === 'reply') {
     await bot.sendMessage(
       msg.chat.id,
-      `✅ Ответ подтвержден для: \nplatform: Facebook\nsender_id: 8886314851424435`
+      `✅ Reply message for: \nplatform: Facebook\nsender_id: 8886314851424435`
     )
   } else if (action === 'decline') {
     await bot.sendMessage(
       msg.chat.id,
-      `❌ Ответ отклонен для: \nplatform: Facebook\nsender_id: 8886314851424435`
+      `❌ Decline message for: \nplatform: Facebook\nsender_id: 8886314851424435`
     )
   } else {
-    console.log('Неизвестное действие:', action)
+    console.log('Unknown action:', action)
   }
 })
 
