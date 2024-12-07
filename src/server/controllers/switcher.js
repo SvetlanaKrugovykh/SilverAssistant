@@ -30,12 +30,10 @@ function getCallbackData(text) {
 
 async function handler(bot, msg) {
   const chatId = msg?.chat?.id
-  if (!chatId || !msg?.text) return
-
   if (globalBuffer[chatId] === undefined) globalBuffer[chatId] = {}
+
   if (globalBuffer[chatId]?.platform && globalBuffer[chatId]?.senderId) {
-    console.log('Platform:', globalBuffer[chatId]?.platform)
-    console.log('Sender ID:', globalBuffer[chatId]?.senderId)
+    console.log(`Platform: ${globalBuffer[chatId]?.platform}. SenderID: ${globalBuffer[chatId]?.senderId}`)
 
     await sendToPlatform(globalBuffer[chatId].platform, globalBuffer[chatId].senderId, msg)
 
@@ -43,6 +41,8 @@ async function handler(bot, msg) {
     delete globalBuffer[chatId].senderId
     return
   }
+
+  if (!chatId || !msg?.text) return
 
   const data = getCallbackData(msg.text)
   if (!data) return
