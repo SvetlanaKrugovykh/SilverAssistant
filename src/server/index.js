@@ -3,6 +3,9 @@ const { isThisGroupId } = require('./modules/bot')
 const { bot } = require('./globalBuffer')
 const menu = require('./modules/common_menu')
 const { globalBuffer } = require('./globalBuffer')
+const Persistent = require('./controllers/platfomPersistent')
+
+Persistent.setPersistentMenuFB()
 
 bot.on('message', async (msg) => {
 
@@ -41,6 +44,13 @@ bot.on('callback_query', async (callbackQuery) => {
       return
     }
     console.log('Callback query received:', action)
+
+    if (globalBuffer[senderId] === undefined) {
+      globalBuffer[senderId] = {}
+      Persistent.sendWelcomeMessage(senderId)
+    } else {
+      Persistent.sendMultipleChoice(senderId)
+    }
 
     if (action === 'reply') {
       await bot.sendMessage(
