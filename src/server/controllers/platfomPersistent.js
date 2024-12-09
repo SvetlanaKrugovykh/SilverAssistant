@@ -89,7 +89,6 @@ module.exports.sendWelcomeMessage = async function (recipientId) {
   }
 }
 
-
 module.exports.sendMultipleChoice = async function (recipientId) {
   const PAGE_ACCESS_TOKEN = process.env.FACEBOOK_PAGE_ACCESS_TOKEN
   const url = `https://graph.facebook.com/${process.env.API_VERSION}/me/messages?access_token=${PAGE_ACCESS_TOKEN}`
@@ -97,6 +96,7 @@ module.exports.sendMultipleChoice = async function (recipientId) {
   const lang = 'en'
   const elements = Object.entries(menu.menuItems[lang]).map(([key, value]) => ({
     title: value.description,
+    image_url: value.image_url,
     buttons: [
       {
         type: "postback",
