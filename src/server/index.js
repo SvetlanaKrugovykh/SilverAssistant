@@ -47,15 +47,15 @@ bot.on('callback_query', async (callbackQuery) => {
 
     if (globalBuffer[senderId] === undefined) {
       globalBuffer[senderId] = {}
-      Persistent.sendWelcomeMessage(senderId)
+      if (platform !== 'whatsapp') Persistent.sendWelcomeMessage(senderId)
     } else {
-      Persistent.sendMultipleChoice(senderId)
+      if (platform !== 'whatsapp') Persistent.sendMultipleChoice(senderId)
     }
 
     if (action === 'reply') {
       await bot.sendMessage(
         msg.chat.id,
-        `✅ Input reply message for: \nplatform: Facebook\nsender_id: ${senderId}`
+        `✅ Input reply message for: \nplatform: ${platform}\nsender_id: ${senderId}`
       )
       if (globalBuffer[chatId] === undefined) globalBuffer[chatId] = {}
       globalBuffer[chatId].platform = platform

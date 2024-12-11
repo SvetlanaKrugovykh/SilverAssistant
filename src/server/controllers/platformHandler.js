@@ -55,7 +55,7 @@ module.exports.sendToPlatform = async function (platform, senderId, msg) {
     }
 
 
-    console.log('Content ready for Facebook:', content)
+    console.log(`Content ready for ${platform}:`, content)
 
 
     switch (platform) {

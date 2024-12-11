@@ -9,7 +9,7 @@ const { callTranslate } = require('../services/translation')
 const { callSpeechToTxt } = require('../services/speechToTxt')
 const { selectedByUser } = require('../globalBuffer')
 
-module.exports.commonStartMenu = async function (bot, msg, home = false) {
+module.exports.commonStartMenu = async function (bot, msg) {
   console.log(`/start at ${new Date()} tg_user_id: ${msg.chat.id}`)
   const adminUser = users.find(user => user.id === msg.chat.id)
   if (adminUser) {
@@ -121,7 +121,7 @@ module.exports.notTextScene = async function (bot, msg, lang = "en") {
 }
 
 async function blockMenu(bot, msg, lang = "en") {
-  await bot.sendMessage(msg.chat.id, texts[lang]['0block'], {})
+  await bot.sendMessage(msg.chat.id, texts[lang]['block'], {})
 }
 
 module.exports.translation = async function (bot, msg, data) {
