@@ -13,6 +13,7 @@ module.exports = {
         FACEBOOK_PAGE_ACCESS_TOKEN: process.env.FACEBOOK_PAGE_ACCESS_TOKEN,
         INSTAGRAM_ACCESS_TOKEN: process.env.INSTAGRAM_ACCESS_TOKEN,
         WHATSAPP_NUMBER: process.env.WHATSAPP_NUMBER,
+        WHATSAPP_ACCESS_TOKEN: process.env.WHATSAPP_ACCESS_TOKEN,
       },
       env_production: {
         NODE_ENV: 'production',
@@ -23,6 +24,7 @@ module.exports = {
         FACEBOOK_PAGE_ACCESS_TOKEN: process.env.FACEBOOK_PAGE_ACCESS_TOKEN,
         INSTAGRAM_ACCESS_TOKEN: process.env.INSTAGRAM_ACCESS_TOKEN,
         WHATSAPP_NUMBER: process.env.WHATSAPP_NUMBER,
+        WHATSAPP_ACCESS_TOKEN: process.env.WHATSAPP_ACCESS_TOKEN,
       },
     },
   ],
